@@ -12,8 +12,11 @@ const navItems = [
   { label: 'Lives Gravadas',  icon: '🎥', path: '/lives' },
 ];
 
+const AMAZON_BOOKS_LINK = 'https://www.amazon.com.br/COLE_SEU_LINK_AFILIADO';
+
 const externalItems = [
   { label: 'Grupo WhatsApp',  icon: '💬', href: WHATSAPP_GROUP_LINK },
+  { label: 'Livros',          icon: '📚', href: AMAZON_BOOKS_LINK },
 ];
 
 export function Sidebar() {
