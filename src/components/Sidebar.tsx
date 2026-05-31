@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { signOut } from '../lib/auth';
 
-const WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/COLE_O_LINK_AQUI';
+const WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/ID6nTl8kZ5YFJP2bZUdCMH?mode=gi_t';
 
 const navItems = [
   { label: 'Início',          icon: '🏠', path: '/' },
