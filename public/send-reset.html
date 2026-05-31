@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Enviar reset</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #111; color: #fff; }
+    .box { background: #1a1a1a; padding: 2rem; border-radius: 8px; width: 320px; }
+    h2 { margin-top: 0; color: #C9A050; }
+    button { width: 100%; padding: 12px; background: #C9A050; border: none; color: #000; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 16px; }
+    #msg { margin-top: 1rem; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Enviar link de reset</h2>
+    <p style="color:#aaa;font-size:14px">Clique abaixo para enviar o email de redefinição de senha com o redirect correto.</p>
+    <button onclick="enviar()">Enviar email de reset</button>
+    <div id="msg"></div>
+  </div>
+  <script>
+    const { createClient } = supabase
+    const client = createClient(
+      'https://smfpnrzsidewgaudsibu.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNtZnBucnpzaWRld2dhdWRzaWJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMzEwNzcsImV4cCI6MjA5NTcwNzA3N30.Js9eCA8FU2hGrSdhIpuDqbsHSDo2n37L9eCdRIABiuk'
+    )
+    async function enviar() {
+      const msg = document.getElementById('msg')
+      msg.innerHTML = 'Enviando...'
+      const { error } = await client.auth.resetPasswordForEmail(
+        'p.jonathasvieira@gmail.com',
+        { redirectTo: 'http://localhost:5173/reset.html' }
+      )
+      if (error) {
+        msg.innerHTML = '❌ ' + error.message
+      } else {
+        msg.innerHTML = '✅ Email enviado! Verifique sua caixa de entrada e clique no link.'
+      }
+    }
+  </script>
+</body>
+</html>

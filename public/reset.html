@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Definir Senha</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #111; color: #fff; }
+    .box { background: #1a1a1a; padding: 2rem; border-radius: 8px; width: 320px; }
+    h2 { margin-top: 0; color: #C9A050; }
+    input { width: 100%; padding: 10px; margin: 8px 0 16px; background: #222; border: 1px solid #444; color: #fff; border-radius: 4px; box-sizing: border-box; }
+    button { width: 100%; padding: 12px; background: #C9A050; border: none; color: #000; font-weight: bold; border-radius: 4px; cursor: pointer; font-size: 16px; }
+    #msg { margin-top: 1rem; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Definir nova senha</h2>
+    <input type="password" id="pwd" placeholder="Nova senha (mín. 6 caracteres)" />
+    <input type="password" id="pwd2" placeholder="Confirmar senha" />
+    <button onclick="definirSenha()">Salvar senha</button>
+    <div id="msg"></div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://smfpnrzsidewgaudsibu.supabase.co'
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNtZnBucnpzaWRld2dhdWRzaWJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxMzEwNzcsImV4cCI6MjA5NTcwNzA3N30.Js9eCA8FU2hGrSdhIpuDqbsHSDo2n37L9eCdRIABiuk'
+
+    const { createClient } = supabase
+    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+    // Captura o token de recuperação da URL automaticamente
+    client.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        document.getElementById('msg').innerHTML = '<span style="color:#C9A050">✓ Link válido. Defina sua nova senha.</span>'
+      }
+    })
+
+    async function definirSenha() {
+      const pwd = document.getElementById('pwd').value
+      const pwd2 = document.getElementById('pwd2').value
+      const msg = document.getElementById('msg')
+
+      if (pwd.length < 6) { msg.innerHTML = '❌ Senha muito curta (mín. 6 caracteres)'; return }
+      if (pwd !== pwd2) { msg.innerHTML = '❌ Senhas não coincidem'; return }
+
+      const { error } = await client.auth.updateUser({ password: pwd })
+
+      if (error) {
+        msg.innerHTML = '❌ Erro: ' + error.message
+      } else {
+        msg.innerHTML = '✅ Senha definida! <a href="/" style="color:#C9A050">Ir para o app</a>'
+      }
+    }
+  </script>
+</body>
+</html>

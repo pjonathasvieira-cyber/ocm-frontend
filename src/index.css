@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================================
+   DESIGN SYSTEM: O Código da Masculinidade
+   Dark, minimal, austere aesthetic with dourado accent (#C9A050)
+   ============================================================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  @apply bg-[#0D0D0D] text-[#F0F0F0];
+}
+
+/* ============================================================================
+   COMPONENT CLASSES
+   ============================================================================ */
+
+/* Primary Button */
+.btn-primary {
+  @apply inline-block px-6 py-3 bg-[#C9A050] text-black font-semibold rounded-sm
+         transition-all duration-200 hover:opacity-90 active:opacity-80;
+}
+
+.btn-primary:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Secondary Button */
+.btn-secondary {
+  @apply inline-block px-6 py-3 border border-[#C9A050] text-[#C9A050] font-medium rounded-sm
+         transition-all duration-200 hover:bg-[#C9A050] hover:text-black active:opacity-80;
+}
+
+.btn-secondary:disabled {
+  @apply opacity-50 cursor-not-allowed border-[#555555] text-[#555555];
+}
+
+/* Input Field */
+.input-field {
+  @apply w-full px-4 py-3 bg-[#1A1A1A] border border-[#2A2A2A] text-[#F0F0F0] rounded-sm
+         placeholder-[#555555] transition-colors duration-200;
+}
+
+.input-field:focus {
+  @apply outline-none border-[#C9A050] bg-[#222222];
+}
+
+.input-field:disabled {
+  @apply bg-[#0D0D0D] border-[#1A1A1A] text-[#555555] cursor-not-allowed;
+}
+
+/* Badge - Pilar */
+.badge-pilar {
+  @apply inline-block px-3 py-1 border border-[#C9A050] text-[#C9A050]
+         text-xs font-semibold uppercase rounded-sm tracking-widest;
+}
+
+/* Custom Checkbox */
+.checkbox-custom {
+  @apply w-5 h-5 rounded-sm border-[1.5px] border-[#C9A050] bg-transparent
+         cursor-pointer transition-all duration-200 appearance-none;
+}
+
+.checkbox-custom:checked {
+  @apply bg-[#C9A050] border-[#C9A050];
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 11.94l6.72-6.72a.75.75 0 011.06 0z'/%3E%3C/svg%3E");
+  background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.checkbox-custom:disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+/* Divider */
+.divider {
+  @apply border-t border-[#2A2A2A];
+}
+
+/* Card Base */
+.card {
+  @apply bg-[#1A1A1A] rounded-sm p-6;
+}
+
+.card-elevated {
+  @apply bg-[#222222] rounded-sm p-6;
+}
+
+/* Text Styles */
+.label-small {
+  @apply text-xs uppercase font-semibold text-[#C9A050] tracking-widest;
+}
+
+.label-accent-line {
+  @apply w-10 h-px bg-[#C9A050];
+}
+
+.text-secondary {
+  @apply text-[#888888] text-xs;
+}
+
+.text-muted {
+  @apply text-[#555555] text-sm;
+}
+
+.line-through-muted {
+  @apply line-through text-[#555555];
+}
+
+/* Progress Bar */
+.progress-bar {
+  @apply w-full h-2 bg-[#2A2A2A] rounded-full overflow-hidden;
+}
+
+.progress-fill {
+  @apply h-full bg-[#C9A050] transition-all duration-300;
+}
+
+/* Border Left Accent */
+.border-accent-left {
+  @apply border-l-[3px] border-l-[#C9A050];
+}
+
+/* Accessibility: Focus Ring */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-[#C9A050] focus:ring-offset-2 focus:ring-offset-[#0D0D0D];
+}
+
+/* ============================================================================
+   UTILITY CLASSES
+   ============================================================================ */
+
+.container-mobile {
+  @apply mx-auto px-4 max-w-mobile;
+}
+
+.flex-center {
+  @apply flex items-center justify-center;
+}
+
+.transition-smooth {
+  @apply transition-all duration-300 ease-out;
+}
