@@ -4,7 +4,7 @@ import { Button } from '../components/Button';
 import { WeekCard } from '../components/WeekCard';
 import { Divider } from '../components/Divider';
 import { getCurrentUserProfile, getCurrentWeekNumber } from '../lib/auth';
-import { getWeekByNumber, getDaysForWeek } from '../lib/api';
+import { getWeekByNumber, getDaysForWeek, getNextDevotionalDayId } from '../lib/api';
 import type { Week, Day } from '../lib/api';
 import { daysRemainingUntilExpiration } from '../lib/utils';
 
@@ -16,6 +16,7 @@ export function HomePage() {
   const [currentWeek, setCurrentWeek] = useState<Week | null>(null);
   const [days, setDays] = useState<Day[]>([]);
   const [currentWeekNumber, setCurrentWeekNumber] = useState(1);
+  const [nextDevotionalDayId, setNextDevotionalDayId] = useState<number | null>(null);
 
   useEffect(() => {
     async function loadData() {
@@ -59,6 +60,11 @@ export function HomePage() {
         }
 
         setDays(daysRes.data || []);
+
+        // Get the devotional the user should open next (continue where they left off)
+        const nextRes = await getNextDevotionalDayId();
+        if (!nextRes.error && nextRes.data) setNextDevotionalDayId(nextRes.data);
+
         setLoading(false);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
@@ -136,7 +142,11 @@ export function HomePage() {
                 <Button
                   variant="primary"
                   size="md"
-                  onClick={() => days[0] ? navigate(`/day/${days[0].id}`) : navigate('/weeks')}
+                  onClick={() => {
+                    if (nextDevotionalDayId) navigate(`/day/${nextDevotionalDayId}`);
+                    else if (days[0]) navigate(`/day/${days[0].id}`);
+                    else navigate('/weeks');
+                  }}
                 >
                   Abrir Devocional
                 </Button>

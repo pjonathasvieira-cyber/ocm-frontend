@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AudioPlayer } from '../components/AudioPlayer';
-import { getDevotionalForDay, getAudioForDay } from '../lib/api';
+import { getDevotionalForDay, getAudioForDay, getDevotionalCompletion, setDevotionalCompletion } from '../lib/api';
 import { supabase } from '../lib/supabase';
 import type { Devotional, Audio } from '../lib/api';
 
@@ -18,6 +18,8 @@ export function DevotionalPage() {
   const [note, setNote] = useState('');
   const [noteSaved, setNoteSaved] = useState(false);
   const [noteSaving, setNoteSaving] = useState(false);
+  const [completed, setCompleted] = useState(false);
+  const [completing, setCompleting] = useState(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -92,6 +94,10 @@ export function DevotionalPage() {
       const devRes = await getDevotionalForDay(dayIdNum);
       setDevotional(devRes.data);
 
+      // 3b. Carregar status de conclusão
+      const completionRes = await getDevotionalCompletion(dayIdNum);
+      setCompleted(completionRes.data);
+
       // 4. Carregar áudio
       const audioRes = await getAudioForDay(dayIdNum);
       if (!audioRes.error && audioRes.data) setAudio(audioRes.data);
@@ -116,6 +122,7 @@ export function DevotionalPage() {
     setNextDayId(null);
     setNote('');
     setNoteSaved(false);
+    setCompleted(false);
     loadData();
   }, [dayId]);
 
@@ -134,6 +141,16 @@ export function DevotionalPage() {
     const daysSince = Math.floor((today.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
     return daysSince >= (weekNum - 1) * 7 + (dayNum - 1);
   }
+
+  const handleToggleCompleted = async () => {
+    if (!dayId || completing) return;
+    const next = !completed;
+    setCompleting(true);
+    setCompleted(next);
+    const { error } = await setDevotionalCompletion(parseInt(dayId, 10), next);
+    if (error) setCompleted(!next);
+    setCompleting(false);
+  };
 
   // Salvar nota automaticamente com debounce
   const handleNoteChange = (value: string) => {
@@ -258,6 +275,22 @@ export function DevotionalPage() {
             className="w-full bg-bg-card border border-border rounded p-4 text-text-primary text-sm leading-relaxed resize-none focus:outline-none focus:border-accent transition-colors placeholder:text-text-secondary"
           />
           <p className="text-xs text-text-secondary mt-1">Salvo automaticamente · Visível apenas para você</p>
+        </div>
+
+        {/* Concluir devocional */}
+        <div className="mb-8">
+          <button
+            onClick={handleToggleCompleted}
+            disabled={completing}
+            className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded text-sm font-semibold border transition-colors disabled:opacity-60 ${
+              completed
+                ? 'bg-accent border-accent text-black'
+                : 'border-accent text-accent hover:bg-accent hover:text-black'
+            }`}
+          >
+            <span>{completed ? '✓' : '○'}</span>
+            {completed ? 'Devocional concluído' : 'Marcar devocional como concluído'}
+          </button>
         </div>
 
         {/* Navegação */}

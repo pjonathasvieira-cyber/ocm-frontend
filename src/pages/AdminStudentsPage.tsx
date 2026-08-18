@@ -5,6 +5,14 @@ import { getStudents, updateStudent, deleteStudent } from '../lib/adminApi';
 import type { StudentResponse } from '../lib/adminApi';
 import { formatDateShort } from '../lib/utils';
 
+const ACCESS_LEVEL_LABELS: Record<number, string> = {
+  1: 'Nível 1',
+  2: 'Nível 2',
+  3: 'Nível 3',
+  4: 'Nível 4',
+  5: 'Nível 5',
+};
+
 export function AdminStudentsPage() {
   const navigate = useNavigate();
   const [students, setStudents] = useState<StudentResponse[]>([]);
@@ -90,6 +98,22 @@ export function AdminStudentsPage() {
 
     // Update local state
     setStudents(students.map((s) => (s.id === studentId ? { ...s, mustChangePassword: true } : s)));
+  };
+
+  const handleChangeLevel = async (studentId: string, newLevel: number) => {
+    const adminToken = localStorage.getItem('adminToken');
+    if (!adminToken) return;
+
+    setActionLoading(studentId);
+    const res = await updateStudent(studentId, { accessLevel: newLevel }, adminToken);
+    setActionLoading(null);
+
+    if (res.error) {
+      setError(res.error);
+      return;
+    }
+
+    setStudents(students.map((s) => (s.id === studentId ? { ...s, accessLevel: newLevel } : s)));
   };
 
   const handleDelete = async (studentId: string) => {
@@ -187,7 +211,7 @@ export function AdminStudentsPage() {
                 <div className="flex-grow">
                   <h3 className="font-semibold text-text-primary">{student.name || student.email}</h3>
                   <p className="text-text-secondary text-sm">{student.email}</p>
-                  <div className="flex gap-4 mt-2 text-xs text-text-secondary">
+                  <div className="flex flex-wrap gap-4 mt-2 text-xs text-text-secondary">
                     <span>Semana {student.currentWeek}</span>
                     <span>•</span>
                     <span>{student.daysRemaining} dias restantes</span>
@@ -195,6 +219,25 @@ export function AdminStudentsPage() {
                     <span className={`font-semibold ${student.status === 'active' ? 'text-accent' : 'text-text-secondary'}`}>
                       {student.status === 'active' ? 'Ativo' : student.status === 'expired' ? 'Expirado' : 'Inativo'}
                     </span>
+                    <span>•</span>
+                    <span className="text-accent font-semibold">
+                      {ACCESS_LEVEL_LABELS[student.accessLevel ?? 1] ?? 'Nível 1'}
+                    </span>
+                  </div>
+                  <div className="mt-3 flex items-center gap-2">
+                    <span className="text-text-muted text-xs uppercase tracking-wider">Acesso:</span>
+                    <select
+                      value={student.accessLevel ?? 1}
+                      onChange={(e) => handleChangeLevel(student.id, Number(e.target.value))}
+                      disabled={actionLoading === student.id}
+                      className="px-2 py-1 bg-bg-elevated border border-border rounded text-text-primary text-xs focus:border-accent transition-colors"
+                    >
+                      <option value={1}>Nível 1 — Ebook</option>
+                      <option value={2}>Nível 2 — + Audiobook</option>
+                      <option value={3}>Nível 3 — + Devocional</option>
+                      <option value={4}>Nível 4 — + Playbook</option>
+                      <option value={5}>Nível 5 — Completo</option>
+                    </select>
                   </div>
                 </div>
 

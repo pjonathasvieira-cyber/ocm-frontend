@@ -9,6 +9,7 @@ export interface UserProfile {
   access_expires_at: string | null
   must_change_password: boolean
   is_active: boolean
+  access_level: number
   created_at: string
 }
 

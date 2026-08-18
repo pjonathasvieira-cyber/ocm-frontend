@@ -1,17 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { signOut } from '../lib/auth';
+import { useAccess } from '../hooks/useAccess';
 
 const WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/ID6nTl8kZ5YFJP2bZUdCMH?mode=gi_t';
-
-const navItems = [
-  { label: 'Início',          icon: '🏠', path: '/' },
-  { label: 'Devocional',      icon: '📖', path: '/weeks' },
-  { label: 'Treino',          icon: '💪', path: '/workout' },
-  { label: 'Aulas',           icon: '🎓', path: '/aulas' },
-  { label: 'Lives Gravadas',  icon: '🎥', path: '/lives' },
-];
-
 const AMAZON_BOOKS_LINK = 'https://www.amazon.com.br/COLE_SEU_LINK_AFILIADO';
 
 const externalItems = [
@@ -23,6 +15,15 @@ export function Sidebar() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { canAccessEbook, canAccessDevotional, canAccessPlaybook, canAccessWorkout } = useAccess();
+
+  const navItems = [
+    { label: 'Início',     icon: '🏠', path: '/',          locked: false },
+    { label: 'Ebook',      icon: '📕', path: '/ebook',     locked: !canAccessEbook },
+    { label: 'Devocional', icon: '📖', path: '/weeks',     locked: !canAccessDevotional },
+    { label: 'Playbook',   icon: '📋', path: '/playbook',  locked: !canAccessPlaybook },
+    { label: 'Treino',     icon: '💪', path: '/workout',   locked: !canAccessWorkout },
+  ];
 
   const handleNav = (path: string) => {
     navigate(path);
@@ -86,11 +87,16 @@ export function Sidebar() {
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded text-left transition-colors ${
                   isActive
                     ? 'bg-accent text-black font-semibold'
+                    : item.locked
+                    ? 'text-text-muted cursor-pointer hover:bg-bg-elevated'
                     : 'text-text-primary hover:bg-bg-elevated'
                 }`}
               >
                 <span className="text-lg">{item.icon}</span>
                 <span className="text-sm font-medium">{item.label}</span>
+                {item.locked && (
+                  <span className="ml-auto text-xs text-text-muted">🔒</span>
+                )}
               </button>
             );
           })}

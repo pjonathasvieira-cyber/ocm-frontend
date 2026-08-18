@@ -5,11 +5,20 @@ import { Input } from '../components/Input';
 import { createStudent } from '../lib/adminApi';
 import { generatePassword, formatDateShort } from '../lib/utils';
 
+const ACCESS_LEVELS = [
+  { value: 1, label: 'Nível 1 — Ebook' },
+  { value: 2, label: 'Nível 2 — + Audiobook' },
+  { value: 3, label: 'Nível 3 — + Devocional' },
+  { value: 4, label: 'Nível 4 — + Playbook' },
+  { value: 5, label: 'Nível 5 — Completo (+ Treino)' },
+];
+
 export function AdminAddStudentPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
+  const [accessLevel, setAccessLevel] = useState(1);
   const [password, setPassword] = useState(generatePassword());
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -17,7 +26,7 @@ export function AdminAddStudentPage() {
 
   const calculateExpiryDate = (date: string): string => {
     const d = new Date(date);
-    d.setDate(d.getDate() + 180);
+    d.setDate(d.getDate() + 365);
     return d.toISOString().split('T')[0];
   };
 
@@ -44,6 +53,7 @@ export function AdminAddStudentPage() {
         email,
         name: name || undefined,
         startDate,
+        accessLevel,
       },
       adminToken
     );
@@ -120,6 +130,24 @@ export function AdminAddStudentPage() {
                   required
                 />
               </div>
+
+              <div>
+                <label className="block text-text-secondary text-xs font-semibold uppercase tracking-wider mb-2">
+                  Nível de Acesso
+                </label>
+                <select
+                  value={accessLevel}
+                  onChange={(e) => setAccessLevel(Number(e.target.value))}
+                  className="w-full px-4 py-2 bg-bg-elevated border border-border rounded text-text-primary focus:border-accent transition-colors"
+                  disabled={loading}
+                >
+                  {ACCESS_LEVELS.map((lvl) => (
+                    <option key={lvl.value} value={lvl.value}>
+                      {lvl.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
@@ -140,7 +168,7 @@ export function AdminAddStudentPage() {
               </div>
               <div>
                 <span className="text-text-secondary text-xs uppercase tracking-wider">Duração:</span>
-                <p className="text-text-primary font-semibold mt-1">180 dias</p>
+                <p className="text-text-primary font-semibold mt-1">365 dias</p>
               </div>
             </div>
           </div>

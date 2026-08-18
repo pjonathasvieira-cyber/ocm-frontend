@@ -7,6 +7,7 @@ export interface StudentDto {
   email: string;
   name?: string;
   startDate: string;
+  accessLevel?: number;
 }
 
 export interface StudentResponse {
@@ -21,6 +22,7 @@ export interface StudentResponse {
   isActive: boolean;
   mustChangePassword: boolean;
   createdAt: string;
+  accessLevel?: number;
 }
 
 export interface DashboardMetrics {
@@ -119,7 +121,7 @@ export async function getStudents(
  */
 export async function updateStudent(
   studentId: string,
-  updates: { name?: string; isActive?: boolean; resetPassword?: boolean },
+  updates: { name?: string; isActive?: boolean; resetPassword?: boolean; accessLevel?: number },
   adminToken: string
 ): Promise<{ error: string | null }> {
   try {

@@ -13,15 +13,18 @@ import { AudioPlayerPage } from './pages/AudioPlayerPage'
 import { HabitsPage } from './pages/HabitsPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { WorkoutPage } from './pages/WorkoutPage'
+import { EbookPage } from './pages/EbookPage'
+import { PlaybookPage } from './pages/PlaybookPage'
+import { LockedPage } from './pages/LockedPage'
 import { AdminLoginPage } from './pages/AdminLoginPage'
 import { AdminDashboardPage } from './pages/AdminDashboardPage'
 import { AdminStudentsPage } from './pages/AdminStudentsPage'
 import { AdminAddStudentPage } from './pages/AdminAddStudentPage'
 import { Layout } from './components/Layout'
 
-type AuthState = 'loading' | 'authenticated' | 'unauthenticated' | 'password-change-required' | 'access-expired'
+type AuthState = 'loading' | 'authenticated' | 'unauthenticated' | 'password-change-required' | 'access-expired' | 'access-locked'
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+function ProtectedRoute({ children, minLevel = 0 }: { children: React.ReactNode; minLevel?: number }) {
   const [authState, setAuthState] = useState<AuthState>('loading')
 
   useEffect(() => {
@@ -49,11 +52,16 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
         return
       }
 
+      if (minLevel > 0 && (profile.access_level ?? 1) < minLevel) {
+        setAuthState('access-locked')
+        return
+      }
+
       setAuthState('authenticated')
     }
 
     checkAuth()
-  }, [])
+  }, [minLevel])
 
   if (authState === 'loading') {
     return (
@@ -73,6 +81,10 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (authState === 'access-expired') {
     return <Navigate to="/access-expired" replace />
+  }
+
+  if (authState === 'access-locked') {
+    return <Layout><LockedPage minLevel={minLevel} /></Layout>
   }
 
   return <>{children}</>
@@ -164,8 +176,24 @@ function App() {
         <Route
           path="/workout"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute minLevel={5}>
               <Layout><WorkoutPage /></Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ebook"
+          element={
+            <ProtectedRoute minLevel={1}>
+              <Layout><EbookPage /></Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/playbook"
+          element={
+            <ProtectedRoute minLevel={4}>
+              <Layout><PlaybookPage /></Layout>
             </ProtectedRoute>
           }
         />
